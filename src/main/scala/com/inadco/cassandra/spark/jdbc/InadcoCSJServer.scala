@@ -94,12 +94,12 @@ class InadcoCSJServer extends Logging{
     HiveThriftServer2.startWithContext(hiveContext)
 		
 		//register all Cassandra tables		
-//		val startDelayMs = new FiniteDuration(0, java.util.concurrent.TimeUnit.MILLISECONDS)
-//		val intervalMs = new FiniteDuration(appConfig.getLong("inadco.tableList.refresh.intervalMs"), java.util.concurrent.TimeUnit.MILLISECONDS)
+		val startDelayMs = new FiniteDuration(0, java.util.concurrent.TimeUnit.MILLISECONDS)
+		val intervalMs = new FiniteDuration(appConfig.getLong("inadco.tableList.refresh.intervalMs"), java.util.concurrent.TimeUnit.MILLISECONDS)
 
-//		val cancellable = system.scheduler.schedule(startDelayMs, intervalMs)({
+		val cancellable = system.scheduler.schedule(startDelayMs, intervalMs)({
 			registerCassandraTables(sc, sparkConf, hiveContext)    	
-//		})
+		})
 		
 		logInfo("InadcoCSJServer started successfully")
 	}
@@ -110,8 +110,10 @@ class InadcoCSJServer extends Logging{
 	def registerCassandraTables(sc: SparkContext, sparkConf: SparkConf, hiveContext: HiveContext){
 	  	val cassMetaDataDAO = new CassandraMetaDataDAO(sparkConf)
 	  	val keyspaceList = cassMetaDataDAO.getKeySpaceList()
-	  	keyspaceList.foreach{ keyspace =>  		  	
-	  		cassMetaDataDAO.getTableList(keyspace).foreach(tableName => registerCassandraTable(keyspace, tableName, cassMetaDataDAO, sc, hiveContext))	
+	  	keyspaceList.foreach { keyspace =>
+	  		cassMetaDataDAO.getTableList(keyspace).foreach { tableName =>
+          registerCassandraTable(keyspace, tableName, cassMetaDataDAO, sc, hiveContext)
+        }
 	  	}	  	
 	}
 	
@@ -145,6 +147,8 @@ class InadcoCSJServer extends Logging{
             .options(Map( "table" -> tableName, "keyspace" -> keyspace, "cluster" -> "Test Cluster" ))
             .load()
           rowSchemaRDD.registerTempTable(hiveTableName)
+
+          rowSchemaRDD.limit(10).registerTempTable(hiveTableName+"_limit10")
 
 					logInfo("Registered table " + hiveTableName)
 //	  		}
