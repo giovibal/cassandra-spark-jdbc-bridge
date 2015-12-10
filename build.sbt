@@ -14,13 +14,14 @@ lazy val root = (project in file(".")).
 //    libraryDependencies += "org.spark-project.hive" % "hive-jdbc" % "0.13.1",
 //    libraryDependencies += "org.spark-project.hive" % "hive-beeline" % "0.13.1",
     libraryDependencies += "org.apache.spark" %% "spark-hive-thriftserver" % "1.4.1",
-      libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9",
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9",
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   )
 
 
 //--------------- customize settings for sbt-assembly -------------
 //output path
+val distDir = "target/dist"
 target in assembly := file(distDir)
 
 //merge
@@ -29,19 +30,18 @@ assemblyMergeStrategy in assembly := {
   case PathList(ps @ _*) if ps.last endsWith ".html" => MergeStrategy.last
   case "application.conf"                            => MergeStrategy.concat
   case "unwanted.txt"                                => MergeStrategy.discard
-  
+
   case x if x.endsWith(".class") => MergeStrategy.last
   case x if x.endsWith(".properties") => MergeStrategy.last
   case x if x.contains("/resources/") => MergeStrategy.last
-  case x if x.contains(".xml") => MergeStrategy.last 
+  case x if x.contains(".xml") => MergeStrategy.last
   case x if x.contains(".thrift") => MergeStrategy.last
-  case x if x.contains(".dtd") => MergeStrategy.last  
+  case x if x.contains(".dtd") => MergeStrategy.last
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
 }
 
-val distDir = "target/dist"
 //---------- copy assets to target/dis--------------
 val copyAssets = taskKey[Unit]("Copy additional assets to target")
 
