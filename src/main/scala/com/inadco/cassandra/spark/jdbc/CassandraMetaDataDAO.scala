@@ -17,7 +17,12 @@ class CassandraMetaDataDAO (conf : SparkConf){
 
 
 	def init(conf: SparkConf) : List[Row] = {
-		val resultSetTables = CassandraConnector(conf).withSessionDo { 
+		val resultSetTables = CassandraConnector(conf).withSessionDo {
+          /*
+          Evaluate to use those queries
+          - select keyspace_name from system.schema_keyspaces;
+          - select keyspace_name,columnfamily_name from system.schema_columnfamilies where keyspace_name = 'sp'
+           */
 			session => session.execute("select keyspace_name, columnfamily_name, column_name,validator from system.schema_columns")
 		}
 		return resultSetTables.all()

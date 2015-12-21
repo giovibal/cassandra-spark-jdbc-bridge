@@ -102,7 +102,7 @@ class InadcoCSJServer extends Logging{
 //		val intervalMs = new FiniteDuration(appConfig.getLong("inadco.tableList.refresh.intervalMs"), java.util.concurrent.TimeUnit.MILLISECONDS)
 //
 //		val cancellable = system.scheduler.schedule(startDelayMs, intervalMs)({
-			registerCassandraTables(sc, sparkConf, hiveContext)    	
+			registerCassandraTables(sc, sparkConf, hiveContext)
 //		})
 		
 		logInfo("InadcoCSJServer started successfully")
