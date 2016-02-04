@@ -1,26 +1,15 @@
 package com.inadco.cassandra.spark.jdbc
 
-import org.apache.spark.Logging
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
-import org.apache.spark.sql._
-import org.apache.spark.sql.hive.thriftserver.HiveThriftServer2.HiveThriftServer2Listener
-import org.apache.spark.sql.types._
-import org.apache.spark.sql.hive.thriftserver.HiveThriftServer2
-import com.datastax.spark.connector._
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
 import java.io.File
-import org.apache.spark.SparkConf
-import org.apache.spark.sql.hive.HiveContext
+import java.sql.Timestamp
+import java.util.{GregorianCalendar, TimeZone}
+
 import akka.actor._
-import akka.actor.Scheduler
-import akka.actor.Scheduler
-import org.joda.time.DateTime
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.ExecutionContext
-import ExecutionContext.Implicits.global
-import scala.tools.nsc.doc.model.Val
+import com.typesafe.config.ConfigFactory
+import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.sql.hive.thriftserver.HiveThriftServer2
+import org.apache.spark.sql.types._
+import org.apache.spark.{Logging, SparkConf, SparkContext}
 
 /**
  * An spark app read and register all Cassandra tables as schema RDDs in Spark SQL and starts an embedded HiveThriftServer2 to make those tables accessible via jdbc:hive2 protocol 
@@ -93,6 +82,14 @@ class InadcoCSJServer extends Logging{
         
     //hive stuff
 		val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
+
+    hiveContext.udf.register("toDateTime", (year:Int,month:Int,day:Int,hour:Int,timeZone:String) => {
+      val tz = TimeZone.getTimeZone(timeZone)
+      val cal = new GregorianCalendar(year, month-1, day, hour, 0, 0)
+      cal.setTimeZone(tz)
+      new Timestamp(cal.getTime.getTime)
+    })
+
     HiveThriftServer2.startWithContext(hiveContext)
 
 
@@ -137,7 +134,9 @@ class InadcoCSJServer extends Logging{
 			case e: Exception => logError("Failed to register table " + hiveTableName, e)
 		}
 	}
-	
+
+
+
 }
 
 
