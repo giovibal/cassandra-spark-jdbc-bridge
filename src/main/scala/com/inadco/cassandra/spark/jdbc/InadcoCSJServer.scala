@@ -85,7 +85,8 @@ class InadcoCSJServer extends Logging{
 
     hiveContext.udf.register("toDateTime", (year:Int,month:Int,day:Int,hour:Int,timeZone:String) => {
       val tz = TimeZone.getTimeZone(timeZone)
-      val cal = new GregorianCalendar(year, month-1, day, hour, 0, 0)
+      val m = if (month > 0) month-1 else month
+      val cal = new GregorianCalendar(year, m, day, hour, 0, 0)
       cal.setTimeZone(tz)
       new Timestamp(cal.getTime.getTime)
     })
