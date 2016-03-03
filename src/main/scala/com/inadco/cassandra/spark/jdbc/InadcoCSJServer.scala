@@ -2,10 +2,11 @@ package com.inadco.cassandra.spark.jdbc
 
 import java.io.File
 import java.sql.Timestamp
-import java.util.{GregorianCalendar, TimeZone}
+import java.util.{Date, Calendar, GregorianCalendar, TimeZone}
 
 import akka.actor._
 import com.typesafe.config.ConfigFactory
+import org.apache.commons.lang3.time.DateUtils
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.hive.thriftserver.HiveThriftServer2
 import org.apache.spark.sql.types._
@@ -89,6 +90,28 @@ class InadcoCSJServer extends Logging{
       val cal = new GregorianCalendar(year, m, day, hour, 0, 0)
       cal.setTimeZone(tz)
       new Timestamp(cal.getTime.getTime)
+    })
+    hiveContext.udf.register("trunc_datetime", (d:Timestamp, res:String) => {
+      var dateTruncated : Date = d;
+      if(res.equalsIgnoreCase("YEAR")) {
+        dateTruncated = DateUtils.truncate(d, Calendar.YEAR)
+      }
+      if(res.equalsIgnoreCase("MONTH")) {
+        dateTruncated = DateUtils.truncate(d, Calendar.MONTH)
+      }
+      if(res.equalsIgnoreCase("DAY") || res.equalsIgnoreCase("DAY_OF_MONTH")) {
+        dateTruncated = DateUtils.truncate(d, Calendar.DAY_OF_MONTH)
+      }
+      if(res.equalsIgnoreCase("HOUR")) {
+        dateTruncated = DateUtils.truncate(d, Calendar.HOUR)
+      }
+      if(res.equalsIgnoreCase("MINUTE")) {
+        dateTruncated = DateUtils.truncate(d, Calendar.MINUTE)
+      }
+      if(res.equalsIgnoreCase("SECOND")) {
+        dateTruncated = DateUtils.truncate(d, Calendar.SECOND)
+      }
+      new Timestamp(dateTruncated.getTime)
     })
 
     HiveThriftServer2.startWithContext(hiveContext)
