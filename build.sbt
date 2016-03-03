@@ -1,19 +1,14 @@
 lazy val root = (project in file(".")).
   settings(
     name := "inadco-csjb",
-    version := "1.1",
+    version := "1.2",
     scalaVersion := "2.10.5",
     libraryDependencies += "com.typesafe" % "config" % "1.2.1",
-//    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.2.1",
-    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.4.1",
-//    libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "1.2.0-alpha2",
-    libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "1.4.0",
-    libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.4.1",
-    libraryDependencies += "org.apache.spark" %% "spark-hive" % "1.4.1",
-//    libraryDependencies += "org.spark-project.hive" % "hive-cli" % "0.13.1",
-//    libraryDependencies += "org.spark-project.hive" % "hive-jdbc" % "0.13.1",
-//    libraryDependencies += "org.spark-project.hive" % "hive-beeline" % "0.13.1",
-    libraryDependencies += "org.apache.spark" %% "spark-hive-thriftserver" % "1.4.1",
+    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.6.0",
+    libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "1.5.0",
+    libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.6.0",
+    libraryDependencies += "org.apache.spark" %% "spark-hive" % "1.6.0",
+    libraryDependencies += "org.apache.spark" %% "spark-hive-thriftserver" % "1.6.0",
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9",
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
   )

@@ -11,9 +11,11 @@ import com.datastax.spark.connector.cql.CassandraConnector
 class CassandraMetaDataDAO (conf : SparkConf){
 	val rowsList : List[Row]=init(conf)
 	val SCHEMA: String ="keyspace_name"
-	val TABLE:  String ="columnfamily_name"
+//	val TABLE:  String ="columnfamily_name"
+	val TABLE:  String ="table_name"
 	val COLUMN: String ="column_name"
-	val COLUMN_DATA_TYPE: String = "validator"
+//	val COLUMN_DATA_TYPE: String = "validator"
+	val COLUMN_DATA_TYPE: String = "type"
 
 
 	def init(conf: SparkConf) : List[Row] = {
@@ -23,7 +25,11 @@ class CassandraMetaDataDAO (conf : SparkConf){
           - select keyspace_name from system.schema_keyspaces;
           - select keyspace_name,columnfamily_name from system.schema_columnfamilies where keyspace_name = 'sp'
            */
-			session => session.execute("select keyspace_name, columnfamily_name, column_name,validator from system.schema_columns")
+      // cassandra 2.x
+      //session => session.execute("select keyspace_name, columnfamily_name, column_name,validator from system.schema_columns")
+
+      // cassandra 3.x
+			session => session.execute("select keyspace_name, table_name, column_name,type from system_schema.columns")
 		}
 		return resultSetTables.all()
 	}
