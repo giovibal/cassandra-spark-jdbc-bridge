@@ -133,13 +133,13 @@ class InadcoCSJServer extends Logging{
 	}
 	
 	def registerCassandraTables(sc: SparkContext, sparkConf: SparkConf, hiveContext: HiveContext){
-	  	val cassMetaDataDAO = new CassandraMetaDataDAO(sparkConf)
-	  	val keyspaceList = cassMetaDataDAO.getKeySpaceList()
-	  	keyspaceList.foreach { keyspace =>
-	  		cassMetaDataDAO.getTableList(keyspace).foreach { tableName =>
-          registerCassandraTable(keyspace, tableName, cassMetaDataDAO, sc, hiveContext)
-        }
-	  	}	  	
+    val cassMetaDataDAO = new CassandraMetaDataDAO(sparkConf)
+    val keyspaceList = cassMetaDataDAO.getKeySpaceList()
+    keyspaceList.foreach { keyspace =>
+      cassMetaDataDAO.getTableList(keyspace).foreach { tableName =>
+        registerCassandraTable(keyspace, tableName, cassMetaDataDAO, sc, hiveContext)
+      }
+    }
 	}
 	
 	def registerCassandraTable(keyspace: String, tableName: String, cassMetaDataDAO: CassandraMetaDataDAO, sc: SparkContext, hiveContext: HiveContext){
