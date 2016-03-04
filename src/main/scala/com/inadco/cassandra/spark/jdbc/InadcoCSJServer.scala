@@ -143,17 +143,21 @@ class InadcoCSJServer extends Logging{
 	}
 	
 	def registerCassandraTable(keyspace: String, tableName: String, cassMetaDataDAO: CassandraMetaDataDAO, sc: SparkContext, hiveContext: HiveContext){
-	  	//format full table name with keyspace_ prefix
-	  	val hiveTableName = keyspace + "_" + tableName
-      logInfo("Try to register hive table " + hiveTableName +" ...")
-	  	try {
-        val rowSchemaRDD = hiveContext.read
-          .format("org.apache.spark.sql.cassandra")
-          .options(Map( "table" -> tableName, "keyspace" -> keyspace, "cluster" -> "Test Cluster" ))
-          .load()
-        rowSchemaRDD.registerTempTable(hiveTableName)
+    //format full table name with keyspace_ prefix
+    val hiveTableName = keyspace + "_" + tableName
+    logInfo(s"Try to register hive table ${hiveTableName} ...")
+    try {
+      val rowSchemaRDD = hiveContext.read
+        .format("org.apache.spark.sql.cassandra")
+        .options(Map( "table" -> tableName, "keyspace" -> keyspace, "cluster" -> "Test Cluster" ))
+        .load()
 
-        logInfo("Registered table " + hiveTableName)
+      val colums : Seq[String] = rowSchemaRDD.columns.toSeq
+      logInfo(s"Colums of table ${hiveTableName}: ${colums}")
+
+      rowSchemaRDD.registerTempTable(hiveTableName)
+
+      logInfo(s"Registered table ${hiveTableName}")
 		} catch {
 			case e: Exception => logError("Failed to register table " + hiveTableName, e)
 		}
