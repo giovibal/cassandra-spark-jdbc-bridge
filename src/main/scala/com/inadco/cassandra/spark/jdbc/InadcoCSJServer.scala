@@ -96,23 +96,36 @@ class InadcoCSJServer extends Logging{
       new Timestamp(cal.getTime.getTime)
     })
     hiveContext.udf.register("trunc_datetime", (d:Timestamp, res:String) => {
-      var dateTruncated : Date = d;
+      var dateTruncated : Date = d
+      val cal = new GregorianCalendar()
+      cal.setTimeZone(TimeZone.getTimeZone("UTC"))
+      cal.setTime(d)
+
       if(res.equalsIgnoreCase("YEAR")) {
-        dateTruncated = DateUtils.truncate(d, Calendar.YEAR)
+        dateTruncated = DateUtils.truncate(cal, Calendar.YEAR)
       }
-      if(res.equalsIgnoreCase("MONTH")) {
-        dateTruncated = DateUtils.truncate(d, Calendar.MONTH)
+      else if(res.equalsIgnoreCase("MONTH")) {
+        dateTruncated = DateUtils.truncate(cal, Calendar.MONTH)
       }
-      if(res.equalsIgnoreCase("DAY") || res.equalsIgnoreCase("DAY_OF_MONTH")) {
-        dateTruncated = DateUtils.truncate(d, Calendar.DAY_OF_MONTH)
+      else if(res.equalsIgnoreCase("DAY") || res.equalsIgnoreCase("DAY_OF_MONTH")) {
+        dateTruncated = DateUtils.truncate(cal, Calendar.DAY_OF_MONTH)
       }
-      if(res.equalsIgnoreCase("HOUR")) {
+      else if(res.equalsIgnoreCase("WEEK")) {
+        cal.setFirstDayOfWeek(Calendar.MONDAY)
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        dateTruncated = cal.getTime
+      }
+      else if(res.equalsIgnoreCase("HOUR")) {
         dateTruncated = DateUtils.truncate(d, Calendar.HOUR)
       }
-      if(res.equalsIgnoreCase("MINUTE")) {
+      else if(res.equalsIgnoreCase("MINUTE")) {
         dateTruncated = DateUtils.truncate(d, Calendar.MINUTE)
       }
-      if(res.equalsIgnoreCase("SECOND")) {
+      else if(res.equalsIgnoreCase("SECOND")) {
         dateTruncated = DateUtils.truncate(d, Calendar.SECOND)
       }
       new Timestamp(dateTruncated.getTime)
